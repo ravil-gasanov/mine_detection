@@ -16,6 +16,8 @@ classifiers = [
     
 ]
 dependencies = [
+    "loguru>=0.7.3",
+    "mlflow>=3.3.2",
     "pandas>=2.3.2",
     "pip",
     "pytest",
