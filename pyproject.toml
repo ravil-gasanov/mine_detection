@@ -1,0 +1,41 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "mine_detection"
+version = "0.0.1"
+description = "Detect buried land mines based on magnetic field distortions."
+authors = [
+  { name = "ravil" },
+]
+
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    
+]
+dependencies = [
+    "pandas>=2.3.2",
+    "pip",
+    "pytest",
+    "python-dotenv",
+    "ruff",
+    "scikit-learn>=1.7.1",
+    "ucimlrepo>=0.0.7",
+]
+requires-python = "~=3.10.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["mine_detection"]
+include = ["pyproject.toml", "mine_detection/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["mine_detection"]
+force-sort-within-sections = true
+
