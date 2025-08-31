@@ -1,3 +1,5 @@
+import pickle
+
 from loguru import logger
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -105,6 +107,10 @@ def train(
 
     # register the model
     register_model(model=best_model, model_name=model_name)
+
+    # pickle the model for easier local use
+    with open("models/production_model.pkl", "wb") as f:
+        pickle.dump(best_model, f)
 
 
 if __name__ == "__main__":
