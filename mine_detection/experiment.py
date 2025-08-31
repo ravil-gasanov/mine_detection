@@ -1,5 +1,6 @@
 from loguru import logger
 import mlflow
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
@@ -29,6 +30,19 @@ def get_model_params(model_name):
                 "logreg__solver": ["liblinear"],
             },
         ],
+        "rf": [
+            {
+                "rf__n_estimators": [200],
+                "rf__max_depth": [10],
+            },
+        ],
+        "gbc": [
+            {
+                "gbc__n_estimators": [100, 200],
+                "gbc__learning_rate": [0.01, 0.1],
+                "gbc__max_depth": [3, 5],
+            },
+        ],
     }
     return params[model_name]
 
@@ -43,6 +57,8 @@ def run_experiments(
     # prepare candidate models
     models = [
         ("logreg", LogisticRegression()),
+        ("rf", RandomForestClassifier(random_state=RANDOM_STATE)),
+        ("gbc", GradientBoostingClassifier(random_state=RANDOM_STATE)),
     ]
 
     mlflow.sklearn.autolog()
