@@ -1,13 +1,13 @@
 import pandas as pd
 
+FEATURES = ["voltage", "height", "soil"]
+TARGET = ["mine"]
 
-def load_data(path: str) -> pd.DataFrame:
-    """Load the dataset from a CSV file.
 
-    Args:
-        file_path (str): Path to the CSV file.
+def load_X_y(path):
+    data = pd.read_csv(path)
 
-    Returns:
-        pd.DataFrame: Loaded dataset.
-    """
-    return pd.read_csv(path)
+    X = data[FEATURES]
+    y = data[TARGET]
+
+    return X, y

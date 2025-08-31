@@ -5,13 +5,11 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
 
 from mine_detection.config import (
-    FEATURES,
     MLFLOW_EXPERIMENT_NAME,
     MLFLOW_TRACKING_URI,
     RANDOM_STATE,
-    TARGET,
 )
-from mine_detection.data import load_data
+from mine_detection.data import load_X_y
 
 
 def build_pipeline(model_name, model):
@@ -36,13 +34,11 @@ def get_model_params(model_name):
 
 
 def run_experiments(
-    train_path="data/interim/train.csv",
+    train_path,
     cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE),
 ):
     # prepare data
-    train = load_data(path=train_path)
-    X = train[FEATURES]
-    y = train[TARGET]
+    X, y = load_X_y(path=train_path)
 
     # prepare candidate models
     models = [
@@ -75,4 +71,4 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
 
-    run_experiments()
+    run_experiments(train_path="data/interim/train.csv")
