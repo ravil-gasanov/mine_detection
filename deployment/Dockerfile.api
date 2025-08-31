@@ -1,0 +1,27 @@
+# Base image
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# System dependencies (for numpy / scikit-learn)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# copy requirements file
+COPY deployment/requirements-api.txt /app/requirements-api.txt
+
+# Install Python dependencies
+RUN pip install -r requirements-api.txt
+
+# Copy the application code
+COPY mine_detection/api.py /app/api.py
+
+# Copy the model file
+COPY models/production_model.pkl /app/models/production_model.pkl
+
+# Expose port
+EXPOSE 8000
+
+# Run FastAPI app with Uvicorn
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
