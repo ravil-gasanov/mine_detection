@@ -576,6 +576,7 @@ name = "mine-detection"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "fastapi" },
     { name = "loguru" },
     { name = "mlflow" },
     { name = "pandas" },
@@ -589,6 +590,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "fastapi", specifier = ">=0.116.1" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "mlflow", specifier = ">=3.3.2" },
     { name = "pandas", specifier = ">=2.3.2" },
