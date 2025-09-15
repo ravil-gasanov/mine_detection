@@ -5,11 +5,12 @@ def start_mlflow():
     """
     Start MLflow server with SQLite backend and local artifact storage.
     Equivalent to running:
-    uv run mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 0.0.0.0 --port 5000
+    uv run mlflow server --backend-store-uri sqlite:///local.db
+    --default-artifact-root ./mlruns --host 0.0.0.0 --port 5000
     """
     cmd = [
         "uv", "run", "mlflow", "server",
-        "--backend-store-uri", "sqlite:///mlflow.db",
+        "--backend-store-uri", "sqlite:///local.db",
         "--default-artifact-root", "./mlruns",
         "--host", "0.0.0.0",
         "--port", "5000"
