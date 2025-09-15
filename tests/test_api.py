@@ -1,43 +1,63 @@
-import requests
+from api.app import Sensor, app, get_session
+from fastapi.testclient import TestClient
+import pytest
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 
-def test_predict():
-    # input that is not a mine
-    test_input = {
-        "voltage": 0.283987607,
-        "height": 0.181818182,
-        "soil": 0.2,
-    }
-
-    response = requests.post(
-        "http://localhost:8000/predict",
-        json=test_input,
-        timeout=1,
+# boilerplate code to use an in-memory SQLite database for testing
+@pytest.fixture(name="session")
+def session_fixture():
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+        yield session
 
-    print(response.json())
 
-    assert response.status_code == 200
-    assert response.json()["prediction"] == ["not a mine"]
+# boilerplate to set up the TestClient
+@pytest.fixture(name="client")
+def client_fixture(session: Session):
+    def get_session_override():
+        return session
 
-    # input that is a mine
-    test_input_is_mine = {
+    app.dependency_overrides[get_session] = get_session_override
+
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
+
+
+def test_predict_api(client: TestClient, session: Session):
+    # input data that should be a mine
+    test_input = {
         "voltage": 0.335347054,
         "height": 0.818181818,
         "soil": 1.0,
     }
 
-    response = requests.post(
+    # make the POST request to the /predict endpoint
+    response = client.post(
         "http://localhost:8000/predict",
-        json=test_input_is_mine,
+        json=test_input,
         timeout=1,
     )
 
-    print(response.json())
+    data = response.json()
 
+    # check that the request was successful
     assert response.status_code == 200
-    assert response.json()["prediction"] == ["mine"]
 
+    # check that the response contains the expected fields and values
+    assert data["mine"] is True
+    assert data["voltage"] == test_input["voltage"]
+    assert data["height"] == test_input["height"]
+    assert data["soil"] == test_input["soil"]
 
-if __name__ == "__main__":
-    test_predict()
+    # check that the sensor data was saved in the database
+    sensor = session.get(Sensor, data["id"])
+    assert sensor is not None
+    assert sensor.mine == data["mine"]
